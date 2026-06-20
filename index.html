@@ -44,9 +44,7 @@
   <script>
     const LIFF_ID = "2010454322-kBiBwzhX";
 
-    const GOOGLE_FORM_BASE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfPE_nCd3V58MPHE8oPoECcYn4IjvpvONYoGEPf-CIQE7e4Og/viewform?usp=pp_url";
-
-    const USER_ID_ENTRY = "entry.221471905";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxqAh6nhjdf0qxNTgeaLEQTjWUND_hCKtTv5NB7kLPiFnGwwKOxZD5FBtN95W5j4PD9/exec";
 
     async function main() {
       try {
@@ -59,12 +57,22 @@
           return;
         }
 
+        const params = new URLSearchParams(window.location.search);
+        const caseCode = params.get("case");
+
+        if (!caseCode) {
+          throw new Error("案件コードが指定されていません。URLに ?case=A のように付けてください。");
+        }
+
         const profile = await liff.getProfile();
         const userId = profile.userId;
 
-        const formUrl = `${GOOGLE_FORM_BASE_URL}&${USER_ID_ENTRY}=${encodeURIComponent(userId)}`;
+        const redirectUrl =
+          GAS_WEB_APP_URL +
+          "?case=" + encodeURIComponent(caseCode) +
+          "&userId=" + encodeURIComponent(userId);
 
-        window.location.href = formUrl;
+        window.location.href = redirectUrl;
 
       } catch (error) {
         showError(error);
